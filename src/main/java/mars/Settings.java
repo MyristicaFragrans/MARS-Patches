@@ -155,6 +155,7 @@ public class Settings extends Observable {
      * execute that code.
      */
     public static final int SELF_MODIFYING_CODE_ENABLED = 20;
+    public static final int XKCD_FIX_OFF_BY_ONE = 21;
 
     // NOTE: key sequence must match up with labels above which are used for array indexes!
     private static String[] booleanSettingsKeys = {"ExtendedAssembler", "BareMachine", "AssembleOnOpen", "AssembleAll",
@@ -163,7 +164,7 @@ public class Settings extends Observable {
             "WarningsAreErrors", "ProgramArguments", "DataSegmentHighlighting",
             "RegistersHighlighting", "StartAtMain", "EditorCurrentLineHighlighting",
             "PopupInstructionGuidance", "PopupSyscallInput", "GenericTextEditor",
-            "AutoIndent", "SelfModifyingCode"};
+            "AutoIndent", "SelfModifyingCode", "XkcdFixOffByOne"};
 
     /**
      * Last resort default values for boolean settings; will use only  if neither
@@ -173,7 +174,7 @@ public class Settings extends Observable {
      */
     public static boolean[] defaultBooleanSettingsValues = { // match the above list by position
             true, false, false, false, false, true, true, false, false,
-            true, false, false, true, true, false, true, true, false, false, true, false};
+            true, false, false, true, true, false, true, true, false, false, true, false, false};
 
     // STRING SETTINGS.  Each array position has associated name.
     /**

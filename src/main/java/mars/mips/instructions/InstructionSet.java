@@ -67,6 +67,14 @@ public class InstructionSet {
 
     }
 
+    private static Random rand = new Random();
+    private static int fixOffByOne(int register) {
+        int offset = 0;
+        if (register > 3 && Globals.getSettings().getBooleanSetting(Settings.XKCD_FIX_OFF_BY_ONE))
+            offset = (rand.nextInt(10) + 40) * (rand.nextBoolean() ? -1 : 1);
+        return offset;
+    }
+
     /**
      * Adds all instructions to the set.  A given extended instruction may have
      * more than one Instruction object, depending on how many formats it can have.
@@ -584,7 +592,7 @@ public class InstructionSet {
                             public void simulate(ProgramStatement statement) throws ProcessingException {
                                 int[] operands = statement.getOperands();
                                 try {
-                                    RegisterFile.updateRegister(operands[0],
+                                    RegisterFile.updateRegister(operands[0], fixOffByOne(operands[0]) +
                                             Globals.memory.getWord(
                                                     RegisterFile.getValue(operands[2]) + operands[1]));
                                 } catch (AddressErrorException e) {
@@ -611,7 +619,7 @@ public class InstructionSet {
                                 try {
                                     RegisterFile.updateRegister(operands[0],
                                             Globals.memory.getWord(
-                                                    RegisterFile.getValue(operands[2]) + operands[1]));
+                                                    RegisterFile.getValue(operands[2]) + operands[1]) + fixOffByOne(operands[0]));
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
                                 }
@@ -629,7 +637,7 @@ public class InstructionSet {
                                     int address = RegisterFile.getValue(operands[2]) + operands[1];
                                     int result = RegisterFile.getValue(operands[0]);
                                     for (int i = 0; i <= address % Globals.memory.WORD_LENGTH_BYTES; i++) {
-                                        result = Binary.setByte(result, 3 - i, Globals.memory.getByte(address - i));
+                                        result = Binary.setByte(result, 3 - i, Globals.memory.getByte(address - i) + fixOffByOne(operands[0]));
                                     }
                                     RegisterFile.updateRegister(operands[0], result);
                                 } catch (AddressErrorException e) {
@@ -649,7 +657,7 @@ public class InstructionSet {
                                     int address = RegisterFile.getValue(operands[2]) + operands[1];
                                     int result = RegisterFile.getValue(operands[0]);
                                     for (int i = 0; i <= 3 - (address % Globals.memory.WORD_LENGTH_BYTES); i++) {
-                                        result = Binary.setByte(result, i, Globals.memory.getByte(address + i));
+                                        result = Binary.setByte(result, i, Globals.memory.getByte(address + i) + fixOffByOne(operands[0]));
                                     }
                                     RegisterFile.updateRegister(operands[0], result);
                                 } catch (AddressErrorException e) {
@@ -668,7 +676,7 @@ public class InstructionSet {
                                 try {
                                     Globals.memory.setWord(
                                             RegisterFile.getValue(operands[2]) + operands[1],
-                                            RegisterFile.getValue(operands[0]));
+                                            RegisterFile.getValue(operands[0]) + fixOffByOne(operands[0]));
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
                                 }
@@ -687,7 +695,7 @@ public class InstructionSet {
                                 try {
                                     Globals.memory.setWord(
                                             RegisterFile.getValue(operands[2]) + operands[1],
-                                            RegisterFile.getValue(operands[0]));
+                                            RegisterFile.getValue(operands[0]) + fixOffByOne(operands[0]));
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
                                 }
@@ -704,7 +712,7 @@ public class InstructionSet {
                                 int[] operands = statement.getOperands();
                                 try {
                                     int address = RegisterFile.getValue(operands[2]) + operands[1];
-                                    int source = RegisterFile.getValue(operands[0]);
+                                    int source = RegisterFile.getValue(operands[0] + fixOffByOne(operands[0]));
                                     for (int i = 0; i <= address % Globals.memory.WORD_LENGTH_BYTES; i++) {
                                         Globals.memory.setByte(address - i, Binary.getByte(source, 3 - i));
                                     }
@@ -723,7 +731,7 @@ public class InstructionSet {
                                 int[] operands = statement.getOperands();
                                 try {
                                     int address = RegisterFile.getValue(operands[2]) + operands[1];
-                                    int source = RegisterFile.getValue(operands[0]);
+                                    int source = RegisterFile.getValue(operands[0] + fixOffByOne(operands[0]));
                                     for (int i = 0; i <= 3 - (address % Globals.memory.WORD_LENGTH_BYTES); i++) {
                                         Globals.memory.setByte(address + i, Binary.getByte(source, i));
                                     }
@@ -740,7 +748,7 @@ public class InstructionSet {
                         new SimulationCode() {
                             public void simulate(ProgramStatement statement) throws ProcessingException {
                                 int[] operands = statement.getOperands();
-                                RegisterFile.updateRegister(operands[0], operands[1] << 16);
+                                RegisterFile.updateRegister(operands[0], (operands[1] + fixOffByOne(operands[0])) << 16);
                             }
                         }));
         instructionList.add(
@@ -1103,7 +1111,7 @@ public class InstructionSet {
                                     RegisterFile.updateRegister(operands[0],
                                             Globals.memory.getByte(
                                                     RegisterFile.getValue(operands[2])
-                                                    + (operands[1] << 16 >> 16))
+                                                    + (((operands[1]) << 16 >> 16)) + fixOffByOne(operands[0]))
                                             << 24
                                             >> 24);
                                 } catch (AddressErrorException e) {
@@ -1123,9 +1131,9 @@ public class InstructionSet {
                                     RegisterFile.updateRegister(operands[0],
                                             Globals.memory.getHalf(
                                                     RegisterFile.getValue(operands[2])
-                                                    + (operands[1] << 16 >> 16))
+                                                    + (((operands[1]) << 16 >> 16)) + fixOffByOne(operands[0]))
                                             << 16
-                                            >> 16);
+                                            >> 16 );
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
                                 }
@@ -1144,8 +1152,8 @@ public class InstructionSet {
                                     RegisterFile.updateRegister(operands[0],
                                             Globals.memory.getHalf(
                                                     RegisterFile.getValue(operands[2])
-                                                    + (operands[1] << 16 >> 16))
-                                            & 0x0000ffff);
+                                                    + ((operands[1]) << 16 >> 16))
+                                            & 0x0000ffff + fixOffByOne(operands[0]));
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
                                 }
@@ -1163,7 +1171,7 @@ public class InstructionSet {
                                     RegisterFile.updateRegister(operands[0],
                                             Globals.memory.getByte(
                                                     RegisterFile.getValue(operands[2])
-                                                    + (operands[1] << 16 >> 16))
+                                                    + (((operands[1]) << 16 >> 16))  + fixOffByOne(operands[0]))
                                             & 0x000000ff);
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
@@ -1181,8 +1189,8 @@ public class InstructionSet {
                                 try {
                                     Globals.memory.setByte(
                                             RegisterFile.getValue(operands[2])
-                                            + (operands[1] << 16 >> 16),
-                                            RegisterFile.getValue(operands[0])
+                                            + (operands[1]<< 16 >> 16),
+                                            (RegisterFile.getValue(operands[0]) + fixOffByOne(operands[0]))
                                             & 0x000000ff);
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
@@ -1201,7 +1209,7 @@ public class InstructionSet {
                                     Globals.memory.setHalf(
                                             RegisterFile.getValue(operands[2])
                                             + (operands[1] << 16 >> 16),
-                                            RegisterFile.getValue(operands[0])
+                                            (RegisterFile.getValue(operands[0]) + fixOffByOne(operands[0]))
                                             & 0x0000ffff);
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
@@ -1268,7 +1276,7 @@ public class InstructionSet {
                             public void simulate(ProgramStatement statement) throws ProcessingException {
                                 int[] operands = statement.getOperands();
                                 RegisterFile.updateRegister(operands[0],
-                                        Coprocessor0.getValue(operands[1]));
+                                        Coprocessor0.getValue(operands[1]) + fixOffByOne(operands[0]));
                             }
                         }));
         instructionList.add(
@@ -1280,7 +1288,7 @@ public class InstructionSet {
                             public void simulate(ProgramStatement statement) throws ProcessingException {
                                 int[] operands = statement.getOperands();
                                 Coprocessor0.updateRegister(operands[1],
-                                        RegisterFile.getValue(operands[0]));
+                                        RegisterFile.getValue(operands[0]) + fixOffByOne(operands[0]));
                             }
                         }));
 
@@ -2377,7 +2385,7 @@ public class InstructionSet {
                                 try {
                                     Coprocessor1.updateRegister(operands[0],
                                             Globals.memory.getWord(
-                                                    RegisterFile.getValue(operands[2]) + operands[1]));
+                                                    RegisterFile.getValue(operands[2]) + operands[1]) + fixOffByOne(operands[0]));
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
                                 }
@@ -2404,10 +2412,10 @@ public class InstructionSet {
                                 try {
                                     Coprocessor1.updateRegister(operands[0],
                                             Globals.memory.getWord(
-                                                    RegisterFile.getValue(operands[2]) + operands[1]));
+                                                    RegisterFile.getValue(operands[2]) + operands[1]) + fixOffByOne(operands[0]));
                                     Coprocessor1.updateRegister(operands[0] + 1,
                                             Globals.memory.getWord(
-                                                    RegisterFile.getValue(operands[2]) + operands[1] + 4));
+                                                    RegisterFile.getValue(operands[2]) + operands[1] + 4) + fixOffByOne(operands[0]));
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
                                 }
@@ -2424,7 +2432,7 @@ public class InstructionSet {
                                 try {
                                     Globals.memory.setWord(
                                             RegisterFile.getValue(operands[2]) + operands[1],
-                                            Coprocessor1.getValue(operands[0]));
+                                            Coprocessor1.getValue(operands[0]) );
                                 } catch (AddressErrorException e) {
                                     throw new ProcessingException(statement, e);
                                 }

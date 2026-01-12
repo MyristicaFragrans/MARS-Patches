@@ -77,7 +77,7 @@ public class VenusUI extends JFrame {
     private JMenuItem runGo, runStepOver, runStep, runBackstep, runReset, runAssemble, runStop, runPause, runClearBreakpoints, runToggleBreakpoints;
     private JCheckBoxMenuItem settingsLabel, settingsPopupInput, settingsValueDisplayBase, settingsAddressDisplayBase,
             settingsExtended, settingsAssembleOnOpen, settingsAssembleAll, settingsWarningsAreErrors, settingsStartAtMain,
-            settingsDelayedBranching, settingsProgramArguments, settingsSelfModifyingCode;
+            settingsDelayedBranching, settingsProgramArguments, settingsSelfModifyingCode, settingsXkcdFixOffByOne;
     private JMenuItem settingsExceptionHandler, settingsEditor, settingsHighlighting, settingsMemoryConfiguration;
     private JMenuItem helpHelp, helpAbout;
 
@@ -102,7 +102,8 @@ public class VenusUI extends JFrame {
             settingsExtendedAction, settingsAssembleOnOpenAction, settingsAssembleAllAction,
             settingsWarningsAreErrorsAction, settingsStartAtMainAction, settingsProgramArgumentsAction,
             settingsDelayedBranchingAction, settingsExceptionHandlerAction, settingsEditorAction,
-            settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction;
+            settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction,
+            settingsXkcdFixOffByOneAction;
     private Action helpHelpAction, helpAboutAction;
 
 
@@ -430,6 +431,11 @@ public class VenusUI extends JFrame {
                     "If set, the MIPS program can write and branch to both text and data segments.",
                     null, null,
                     mainUI);
+            settingsXkcdFixOffByOneAction = new SettingsXkcdFixOffByOne("XKCD Off-By-One Error Fix",
+                    null,
+                    "Applies advanced techniques to eliminate off-by-one errors entirely",
+                    null, null,
+                    mainUI);
             settingsEditorAction = new SettingsEditorAction("Editor...",
                     null,
                     "View and modify text editor settings.",
@@ -599,6 +605,8 @@ public class VenusUI extends JFrame {
         settingsDelayedBranching.setSelected(Globals.getSettings().getDelayedBranchingEnabled());
         settingsSelfModifyingCode = new JCheckBoxMenuItem(settingsSelfModifyingCodeAction);
         settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
+        settingsXkcdFixOffByOne = new JCheckBoxMenuItem(settingsXkcdFixOffByOneAction);
+        settingsXkcdFixOffByOne.setSelected(Globals.getSettings().getBooleanSetting(Settings.XKCD_FIX_OFF_BY_ONE));
         settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
         settingsAssembleOnOpen.setSelected(Globals.getSettings().getAssembleOnOpenEnabled());
         settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
@@ -628,6 +636,7 @@ public class VenusUI extends JFrame {
         settings.add(settingsExtended);
         settings.add(settingsDelayedBranching);
         settings.add(settingsSelfModifyingCode);
+        settings.add(settingsXkcdFixOffByOne);
         settings.addSeparator();
         settings.add(settingsEditor);
         settings.add(settingsHighlighting);
