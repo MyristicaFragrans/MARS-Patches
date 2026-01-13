@@ -11,6 +11,7 @@ don't want to bother with dependencies.
 
 ## New Features:
 
+- [Code Background](#code-background)
 - [XKCD Off-By-One Fix](#xkcd-off-by-one-fix)
 - [ChatGPT Integration](#chatgpt-thing)
 
@@ -19,7 +20,7 @@ don't want to bother with dependencies.
 Replace the image at `src/main/resources/images/background.png` to have it
 render in your editor. Disable by deleting the picture. User Interface pending.
 
-![background.png](images/background.png)
+![Showcase of Editor Background](images/background.png)
 
 Current image there, as well as in the screenshot, is from here: https://pixabay.com/illustrations/computer-laptop-office-woman-9982456/
 
