@@ -11,13 +11,18 @@
 
 package mars.venus.editors.jeditsyntax;
 
+import mars.Globals;
 import mars.venus.editors.jeditsyntax.tokenmarker.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.ToolTipManager;
 import javax.swing.text.*;
 import javax.swing.JComponent;
 import java.awt.event.MouseEvent;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * The text area repaint manager. It performs double buffering and paints
@@ -27,6 +32,8 @@ import java.awt.*;
  * @version $Id: TextAreaPainter.java,v 1.24 1999/12/13 03:40:30 sp Exp $
  */
 public class TextAreaPainter extends JComponent implements TabExpander {
+    private BufferedImage img;
+    private boolean usingImage;
     /**
      * Creates a new repaint manager. This should be not be called
      * directly.
@@ -38,6 +45,14 @@ public class TextAreaPainter extends JComponent implements TabExpander {
         setDoubleBuffered(true);
         setOpaque(true);
 
+        try {
+            this.img = ImageIO.read(
+                    getClass().getResource(Globals.imagesPath + "background.png"));
+            usingImage = true;
+        } catch (Exception e) {
+            usingImage = false;
+            System.out.println("Couldn't load image");
+        }
 
         ToolTipManager.sharedInstance().registerComponent(this);
 
@@ -409,6 +424,7 @@ public class TextAreaPainter extends JComponent implements TabExpander {
 
         gfx.setColor(getBackground());
         gfx.fillRect(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+        paintImage(gfx, clipRect);
 
         // We don't use yToLine() here because that method doesn't
         // return lines past the end of the document
@@ -610,6 +626,7 @@ public class TextAreaPainter extends JComponent implements TabExpander {
 
         if (line == textArea.getCaretLine())
             paintCaret(gfx, line, y);
+
     }
 
     protected void paintLineHighlight(Graphics gfx, int line, int y) {// System.out.println("paintLineHighlight "+ (++count));
@@ -700,6 +717,19 @@ public class TextAreaPainter extends JComponent implements TabExpander {
             } else {
                 gfx.drawRect(caretX, y, caretWidth, height - 1);
             }
+        }
+    }
+
+    private void paintImage(Graphics g, Shape clip) {
+        if(usingImage) {
+            var gg = (Graphics2D) g.create();
+            gg.setClip(clip);
+            gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.08f));
+            gg.drawImage(this.img,
+                    getWidth()-img.getWidth(),
+                    getHeight()-img.getHeight(),
+                    this);
+            gg.dispose();
         }
     }
 }

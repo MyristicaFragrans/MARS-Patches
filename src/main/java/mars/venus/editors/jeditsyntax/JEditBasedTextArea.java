@@ -6,6 +6,10 @@ import mars.venus.EditPane;
 import mars.*;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.undo.*;
@@ -31,7 +35,6 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
     private boolean isCompoundEdit = false;
     private CompoundEdit compoundEdit;
     private JEditBasedTextArea sourceCode;
-
 
     public JEditBasedTextArea(EditPane editPain, JComponent lineNumbers) {
         super(lineNumbers);
@@ -391,6 +394,5 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
 
     //
     //////////////////////////////////////////////////////////////////
-
 
 }

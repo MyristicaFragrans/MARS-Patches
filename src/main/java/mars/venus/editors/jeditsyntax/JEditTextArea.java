@@ -13,6 +13,7 @@ import mars.Globals;
 import mars.Settings;
 import mars.venus.editors.jeditsyntax.tokenmarker.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.undo.*;
@@ -21,6 +22,9 @@ import javax.swing.plaf.basic.BasicMenuItemUI;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.ArrayList;
